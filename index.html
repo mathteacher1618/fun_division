@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>有趣的除法 - 香港小學數學</title>
+  <!-- 引入 html2canvas 程式庫以支援報告圖片下載 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    /* 全局樣式與 iPad 觸控優化 */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft JhengHei", sans-serif;
+      -webkit-tap-highlight-color: transparent; /* 移除 iOS/iPad 點擊藍色陰影 */
+    }
+
+    body {
+      background-color: #f0f4f8;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      touch-action: manipulation; /* 優化 iPad 雙擊縮放延遲 */
+    }
+
+    /* 頂部導覽列 */
+    header {
+      background-color: #2b5278;
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .lang-btn {
+      background-color: transparent;
+      border: 1px solid white;
+      color: white;
+      padding: 8px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.2s;
+      min-height: 44px; /* 符合 Apple 觸控目標標準 */
+    }
+
+    .lang-btn:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .page-title {
+      text-align: center;
+      font-size: 1.8rem;
+      color: #2b5278;
+      margin-bottom: 30px;
+      font-weight: bold;
+    }
+
+    /* 首頁選單網格 */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 30px 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 2px solid transparent;
+      min-height: 120px;
+    }
+
+    .card:hover, .card:active {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      border-color: #4a90e2;
+    }
+
+    .card h3 {
+      font-size: 1.4rem;
+      color: #1a365d;
+      margin-bottom: 15px;
+    }
+
+    .card p {
+      color: #666;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    /* 練習界面 */
+    .quiz-wrapper {
+      max-width: 650px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .back-nav-btn {
+      background: white;
+      border: 1px solid #cbd5e0;
+      color: #4a5568;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: bold;
+      margin-bottom: 15px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+      transition: all 0.2s;
+      min-height: 44px;
+    }
+
+    .back-nav-btn:hover {
+      background-color: #edf2f7;
+      color: #2b6cb0;
+    }
+
+    .quiz-card {
+      background: white;
+      border-radius: 16px;
+      padding: 35px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      width: 100%;
+    }
+
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      border-bottom: 2px solid #edf2f7;
+      padding-bottom: 12px;
+    }
+
+    .quiz-progress {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #3182ce;
+    }
+
+    .unit-tag {
+      background-color: #ebf8ff;
+      color: #2b6cb0;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.95rem;
+      font-weight: bold;
+    }
+
+    .equation {
+      font-size: 2.2rem;
+      font-weight: bold;
+      text-align: center;
+      margin: 30px 0;
+      color: #2d3748;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .answer-input {
+      font-size: 2rem;
+      width: 160px;
+      text-align: center;
+      border: 2px solid #cbd5e0;
+      border-radius: 8px;
+      padding: 8px 10px;
+      outline: none;
+      transition: border-color 0.2s;
+      min-height: 50px;
+    }
+
+    .answer-input:focus {
+      border-color: #3182ce;
+    }
+
+    .btn {
+      display: inline-block;
+      width: 100%;
+      padding: 14px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      text-align: center;
+      min-height: 48px;
+    }
+
+    .btn:active {
+      transform: scale(0.99);
+    }
+
+    .btn-primary { background-color: #3182ce; color: white; }
+    .btn-primary:hover { background-color: #2b6cb0; }
+
+    .btn-success { background-color: #38a169; color: white; }
+    .btn-success:hover { background-color: #2f855a; }
+
+    .btn-purple { background-color: #8e44ad; color: white; margin-bottom: 10px; }
+    .btn-purple:hover { background-color: #7d3c98; }
+
+    .btn-sky { background-color: #38bdf8; color: white; margin-bottom: 10px; }
+    .btn-sky:hover { background-color: #0284c7; }
+
+    .btn-gray { background-color: #7f8c8d; color: white; }
+    .btn-gray:hover { background-color: #636e72; }
+
+    /* 反饋與提示訊息 */
+    .feedback-box {
+      margin-top: 20px;
+      padding: 18px;
+      border-radius: 10px;
+      text-align: left;
+      font-size: 1rem;
+    }
+
+    .feedback-success {
+      background-color: #c6f6d5;
+      color: #22543d;
+      border: 1px solid #9ae6b4;
+      text-align: center;
+    }
+
+    .feedback-warning {
+      background-color: #feebc8;
+      color: #744210;
+      border: 1px solid #fbd38d;
+    }
+
+    .feedback-danger {
+      background-color: #fff5f5;
+      color: #742a2a;
+      border: 1px solid #feb2b2;
+    }
+
+    /* 圖解卡片 */
+    .notebook-card {
+      background-color: #ffffff;
+      border: 2px dashed #4a90e2;
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .notebook-title {
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: #2b6cb0;
+      margin-bottom: 10px;
+    }
+
+    .solution-steps {
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* 分析報告界面 */
+    .report-card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      max-width: 600px;
+      margin: 0 auto;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    .report-title {
+      text-align: center;
+      color: #3182ce;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+
+    .report-section {
+      background-color: #f8fafc;
+      border-radius: 8px;
+      padding: 12px 20px;
+      margin-bottom: 15px;
+    }
+
+    .report-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      color: #4a5568;
+      font-size: 0.95rem;
+    }
+
+    .report-row.dashed {
+      border-bottom: 1px dashed #cbd5e0;
+    }
+
+    .report-val { font-weight: bold; }
+    .val-green { color: #276749; }
+    .val-red { color: #9b2c2c; }
+    .val-blue { color: #0284c7; }
+
+    .section-label {
+      font-weight: bold;
+      color: #2d3748;
+      margin: 15px 0 10px 0;
+      font-size: 1rem;
+    }
+
+    .list-box {
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+
+    .list-box.correct-bg { background-color: #f7fafc; }
+    .list-box.wrong-bg { background-color: #f7fafc; }
+
+    .list-title {
+      font-weight: bold;
+      font-size: 1.05rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .item-card-correct {
+      background: #f0fff4;
+      border: 1px solid #c6f6d5;
+      border-radius: 8px;
+      padding: 10px 16px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.95rem;
+      color: #22543d;
+      font-weight: 500;
+    }
+
+    .item-card-wrong {
+      background: #fff5f5;
+      border: 1px solid #fed7d7;
+      border-radius: 8px;
+      padding: 10px 16px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.95rem;
+      color: #9b2c2c;
+      font-weight: 500;
+    }
+
+    .item-card-correct:last-child, .item-card-wrong:last-child {
+      margin-bottom: 0;
+    }
+
+    .item-q-title { font-weight: bold; }
+    .item-ans-text { font-weight: bold; }
+
+    /* Modal 彈窗 */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-box {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    .modal-box h3 { margin-bottom: 12px; color: #2b5278; }
+    .modal-box p { margin-bottom: 20px; color: #4a5568; }
+
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .hidden { display: none !important; }
+
+    /* iPad 螢幕寬度專用調整 */
+    @media (max-width: 768px) {
+      .quiz-card { padding: 25px 20px; }
+      .equation { font-size: 1.8rem; }
+      .answer-input { font-size: 1.6rem; width: 130px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 頂部導覽列 -->
+  <header>
+    <h1 id="header-title">有趣的除法</h1>
+    <button id="lang-toggle-btn" class="lang-btn" onclick="toggleLanguage()">English</button>
+  </header>
+
+  <main>
+    <div class="container">
+
+      <!-- 1. 首頁選擇界面 -->
+      <div id="page-home">
+        <h2 id="home-subtitle" class="page-title">請選擇學習單元</h2>
+        <div class="menu-grid">
+          <div class="card" onclick="startQuiz('div_10_100_1000')">
+            <h3>÷ 10、100、1000</h3>
+            <p id="desc-opt1">探索整數或小數除以 10、100、1000 的規律，掌握小數點向左移動與前補 0 的技巧。</p>
+          </div>
+          <div class="card" onclick="startQuiz('div_decimal_power')">
+            <h3>÷ 0.1、0.01、0.001</h3>
+            <p id="desc-opt2">探索整數或小數除以 0.1、0.01、0.001 的神奇變化，學習小數點向右移動的規律。</p>
+          </div>
+          <div class="card" onclick="startQuiz('mixed')">
+            <h3 id="opt3-title">綜合挑戰</h3>
+            <p id="desc-opt3">融合所有小數除法類型，測試你的靈活運用能力與數學反應力！</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. 答題界面 -->
+      <div id="page-quiz" class="hidden">
+        <div class="quiz-wrapper">
+          <button class="back-nav-btn" onclick="askReturnHome()">
+            <span id="lbl-back-btn">← 返回階段選擇</span>
+          </button>
+
+          <div class="quiz-card">
+            <div class="quiz-header">
+              <span id="quiz-mode-name" class="unit-tag">÷ 10、100、1000</span>
+              <span id="quiz-progress-text" class="quiz-progress">題目 1 / 10</span>
+            </div>
+
+            <div class="equation">
+              <span id="equation-expression">
+                <span id="num1">8.3</span>
+                <span>÷</span>
+                <span id="num2">100</span>
+              </span>
+              <span>=</span>
+              <!-- 輸入框支援 enter 鍵發送及數字鍵盤拉起 -->
+              <input type="text" id="answer-input" class="answer-input" placeholder="答案" autocomplete="off" inputmode="decimal" onkeypress="handleKeyPress(event)">
+            </div>
+
+            <div id="action-area">
+              <button id="btn-submit" class="btn btn-primary" onclick="checkAnswer()">提交答案</button>
+              <button id="btn-next" class="btn btn-success hidden" onclick="nextQuestion()">再答一題 ➔</button>
+            </div>
+
+            <div id="feedback-area" class="hidden"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. 表現分析報告 -->
+      <div id="page-report" class="hidden">
+        <!-- 指定包裹被下載的卡片區域 -->
+        <div id="report-card-to-capture" class="report-card">
+          <h2 id="report-main-title" class="report-title">練習完成！表現分析報告</h2>
+
+          <div class="report-section">
+            <div class="report-row dashed">
+              <span id="lbl-start-time">開始時間：</span>
+              <span id="val-start-time" class="report-val">--</span>
+            </div>
+            <div class="report-row dashed">
+              <span id="lbl-end-time">完成時間：</span>
+              <span id="val-end-time" class="report-val">--</span>
+            </div>
+            <div class="report-row">
+              <span id="lbl-duration">總用時：</span>
+              <span id="val-duration" class="report-val val-blue">--</span>
+            </div>
+          </div>
+
+          <div class="report-section">
+            <div class="report-row dashed">
+              <span id="lbl-total-correct">總答對題數：</span>
+              <span id="val-correct-count" class="report-val val-green">0 / 10</span>
+            </div>
+            <div class="report-row">
+              <span id="lbl-accuracy">整體正確率：</span>
+              <span id="val-accuracy" class="report-val">0%</span>
+            </div>
+          </div>
+
+          <div class="section-label" id="lbl-mastery-title">各主題掌握度分析</div>
+          <div class="report-section">
+            <div class="report-row">
+              <span id="report-unit-name">1. ÷ 10、100、1000</span>
+              <span id="val-unit-mastery" class="report-val">0 / 10 (0%)</span>
+            </div>
+          </div>
+
+          <div class="list-box correct-bg">
+            <div class="list-title val-green">
+              <span>☑</span> <span id="lbl-correct-title">答對的題目</span>
+            </div>
+            <div id="correct-list-container"></div>
+          </div>
+
+          <div class="list-box wrong-bg">
+            <div class="list-title val-red">
+              <span>✕</span> <span id="lbl-wrong-title">答錯 / 需要協助的題目</span>
+            </div>
+            <div id="wrong-list-container"></div>
+          </div>
+
+          <!-- 按鈕選單（不會被截圖包含進去） -->
+          <div data-html2canvas-ignore="true" style="margin-top: 20px;">
+            <button class="btn btn-purple" onclick="downloadReportImage()"><span id="lbl-btn-download">💾 下載報告圖片</span></button>
+            <button class="btn btn-sky" onclick="retryPractice()"><span id="lbl-btn-retry">🔄 我想再試</span></button>
+            <button class="btn btn-gray" onclick="goHome()"><span id="lbl-btn-home">回到主頁重新選擇</span></button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- 通用 Modal -->
+  <div id="custom-modal" class="modal-overlay">
+    <div class="modal-box">
+      <h3 id="modal-title">標題</h3>
+      <p id="modal-msg">內容訊息</p>
+      <div class="modal-buttons">
+        <button id="modal-cancel-btn" class="btn btn-gray" style="flex: 1;" onclick="closeModal()">取消</button>
+        <button id="modal-confirm-btn" class="btn btn-primary" style="flex: 1;" onclick="confirmModalAction()">確定</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 完整多語言字典
+    const i18n = {
+      zh: {
+        headerTitle: "有趣的除法",
+        langBtn: "English",
+        homeSubtitle: "請選擇學習單元",
+        descOpt1: "探索整數或小數除以 10、100、1000 的規律，掌握小數點向左移動與前補 0 的技巧。",
+        descOpt2: "探索整數或小數除以 0.1、0.01、0.001 的神奇變化，學習小數點向右移動的規律。",
+        opt3Title: "綜合挑戰",
+        descOpt3: "融合所有小數除法類型，測試你的靈活運用能力與數學反應力！",
+        unit1: "÷ 10、100、1000",
+        unit2: "÷ 0.1、0.01、0.001",
+        unit3: "綜合挑戰",
+        qProgress: "題目",
+        questionLabel: "第 {n} 題",
+        ansLabel: "答案",
+        yourAnsLabel: "你的回答",
+        correctAnsLabel: "正確答案",
+        backBtn: "← 返回階段選擇",
+        placeholderAns: "答案",
+        submitBtn: "提交答案",
+        nextBtn: "再答一題 ➔",
+        praise: ["太棒了！答對了！🌟", "非常優秀，計算得很精確！👏", "答對了！繼續保持！🎉", "真聰明！完全掌握了技巧！💪"],
+        encourage: ["再試一次！小數點的位置要看清楚喔！", "沒關係，重新算算看，你可以的！", "加油！仔細觀察小數點移動的方向與位數！"],
+        warnZero: "注意：小數點後多餘的 0 請省略（例如：寫 37.1 而非 37.10）。",
+        hintLeft: "解題思路：除以 {divisor} 時，小數點要向【左】移動 {steps} 位！",
+        hintRight: "解題思路：除以 {divisor} 時相當於乘以 {multiplier}，小數點要向【右】移動 {steps} 位！",
+        hintMixed: "解題思路：一步一步計算！先將 <strong>{num1}</strong> 除以 <strong>{div1}</strong> 得到中間結果，再將其除以 <strong>{div2}</strong>。",
+        stepTitle: "完整解題過程：",
+        stepLeft: `
+          1. 觀察除數是 <strong>{num2}</strong>（有 {steps} 個零）。<br>
+          2. 將被除數 <strong>{num1}</strong> 的小數點向【左】移動 <strong>{steps}</strong> 位（必要時小數點前補 0）。<br>
+          3. 得出正確答案為：<strong style="color:#e53e3e; font-size:1.2rem;">{ans}</strong>
+        `,
+        stepRight: `
+          1. 除以 <strong>{num2}</strong> 相當於乘以 <strong>{mult}</strong>。<br>
+          2. 將被除數 <strong>{num1}</strong> 的小數點向【右】移動 <strong>{steps}</strong> 位。<br>
+          3. 得出正確答案為：<strong style="color:#e53e3e; font-size:1.2rem;">{ans}</strong>
+        `,
+        stepMixed: `
+          1. 第一步：計算 <strong>{num1} ÷ {div1}</strong> = <strong>{midAns}</strong>。<br>
+          2. 第二步：將中間結果再進行計算 <strong>{midAns} ÷ {div2}</strong>。<br>
+          3. 得出最終正確答案為：<strong style="color:#e53e3e; font-size:1.2rem;">{ans}</strong>
+        `,
+        moveLeftText: "⤺ 向左移動 {steps} 位 ( ÷ {num2} )",
+        moveRightText: "⤽ 向右移動 {steps} 位 ( ÷ {num2} )",
+        noWrong: "太厲害了！沒有答錯的題目！",
+        noCorrect: "無答對題目",
+        reportTitle: "練習完成！表現分析報告",
+        startTime: "開始時間：",
+        endTime: "完成時間：",
+        durationTime: "總用時：",
+        totalCorrect: "總答對題數：",
+        accuracy: "整體正確率：",
+        masteryTitle: "各主題掌握度分析",
+        correctTitle: "答對的題目",
+        wrongTitle: "答錯 / 需要協助的題目",
+        btnDownload: "💾 下載報告圖片",
+        btnRetry: "🔄 我想再試",
+        btnHome: "回到主頁重新選擇",
+        modalReturnTitle: "返回階段選擇",
+        modalReturnMsg: "確定要返回主選單嗎？目前的答題進度將不會被保存。",
+        diagramTitle: "圖解小數點移動："
+      },
+      en: {
+        headerTitle: "Fun Division",
+        langBtn: "繁體中文",
+        homeSubtitle: "Please Select a Learning Unit",
+        descOpt1: "Explore dividing by 10, 100, 1000 and master moving/padding zeros for the decimal point.",
+        descOpt2: "Explore dividing by 0.1, 0.01, 0.001 and learn moving the decimal point to the right.",
+        opt3Title: "Mixed Challenge",
+        descOpt3: "Combine all decimal division types to test your skills and agility!",
+        unit1: "÷ 10, 100, 1000",
+        unit2: "÷ 0.1, 0.01, 0.001",
+        unit3: "Mixed Challenge",
+        qProgress: "Question",
+        questionLabel: "Q{n}",
+        ansLabel: "Ans",
+        yourAnsLabel: "Your Ans",
+        correctAnsLabel: "Correct Ans",
+        backBtn: "← Back to Stage Selection",
+        placeholderAns: "Ans",
+        submitBtn: "Submit Answer",
+        nextBtn: "Next Question ➔",
+        praise: ["Great job! That's correct! 🌟", "Excellent calculation! 👏", "Correct! Keep it up! 🎉", "Awesome! You got the key pattern! 💪"],
+        encourage: ["Try again! Watch out for the decimal point position!", "It's okay, recount carefully, you can do it!", "Keep going! Check the direction and number of moves!"],
+        warnZero: "Note: Do not include unnecessary trailing zeros (e.g., write 37.1 instead of 37.10).",
+        hintLeft: "Hint: When dividing by {divisor}, move the decimal point {steps} step(s) to the LEFT.",
+        hintRight: "Hint: Dividing by {divisor} is multiplying by {multiplier}. Move the decimal point {steps} step(s) to the RIGHT.",
+        hintMixed: "Hint: Solve step-by-step! Divide <strong>{num1}</strong> by <strong>{div1}</strong> first to get the intermediate value, then divide it by <strong>{div2}</strong>.",
+        stepTitle: "Complete Solution:",
+        stepLeft: `
+          1. The divisor is <strong>{num2}</strong> ({steps} zero(s)).<br>
+          2. Move the decimal point of dividend <strong>{num1}</strong> to the <strong>LEFT</strong> by <strong>{steps}</strong> place(s) (pad with zeros if needed).<br>
+          3. The correct answer is: <strong style="color:#e53e3e; font-size:1.2rem;">{ans}</strong>
+        `,
+        stepRight: `
+          1. Dividing by <strong>{num2}</strong> is equivalent to multiplying by <strong>{mult}</strong>.<br>
+          2. Move the decimal point of dividend <strong>{num1}</strong> to the <strong>RIGHT</strong> by <strong>{steps}</strong> place(s).<br>
+          3. The correct answer is: <strong style="color:#e53e3e; font-size:1.2rem;">{ans}</strong>
+        `,
+        stepMixed: `
+          1. Step 1: Calculate <strong>{num1} ÷ {div1}</strong> = <strong>{midAns}</strong>.<br>
+          2. Step 2: Calculate <strong>{midAns} ÷ {div2}</strong>.<br>
+          3. The final correct answer is: <strong style="color:#e53e3e; font-size:1.2rem;">{ans}</strong>
+        `,
+        moveLeftText: "⤺ Move LEFT by {steps} place(s) ( ÷ {num2} )",
+        moveRightText: "⤽ Move RIGHT by {steps} place(s) ( ÷ {num2} )",
+        noWrong: "Amazing! No incorrect answers!",
+        noCorrect: "No correct questions",
+        reportTitle: "Practice Completed! Performance Report",
+        startTime: "Start Time:",
+        endTime: "Completion Time:",
+        durationTime: "Time Taken:",
+        totalCorrect: "Total Correct:",
+        accuracy: "Overall Accuracy:",
+        masteryTitle: "Topic Mastery Analysis",
+        correctTitle: "Correct Questions",
+        wrongTitle: "Incorrect / Needs Assistance",
+        btnDownload: "💾 Download Report Image",
+        btnRetry: "🔄 Try Again",
+        btnHome: "Back to Home",
+        modalReturnTitle: "Return to Stage Selection",
+        modalReturnMsg: "Are you sure you want to return to home? Current progress will be lost.",
+        diagramTitle: "Decimal Point Movement Diagram:"
+      }
+    };
+
+    let currentLang = 'zh';
+    let currentMode = '';
+    let questions = [];
+    let currentQIndex = 0;
+    let wrongAttempts = 0;
+    let records = [];
+    let startTimeObj = null;
+    let modalActionCallback = null;
+
+    // 按鍵監聽：支援 Enter 鍵提交或跳到下一題，過濾非法字符
+    function handleKeyPress(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const submitBtn = document.getElementById('btn-submit');
+        const nextBtn = document.getElementById('btn-next');
+        
+        if (!submitBtn.classList.contains('hidden')) {
+          checkAnswer();
+        } else if (!nextBtn.classList.contains('hidden')) {
+          nextQuestion();
+        }
+        return;
+      }
+      const allowedChars = /[0-9.]/;
+      if (!allowedChars.test(e.key)) {
+        e.preventDefault();
+      }
+    }
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'zh' ? 'en' : 'zh';
+      const t = i18n[currentLang];
+      
+      document.getElementById('header-title').innerText = t.headerTitle;
+      document.getElementById('lang-toggle-btn').innerText = t.langBtn;
+      document.getElementById('home-subtitle').innerText = t.homeSubtitle;
+      document.getElementById('desc-opt1').innerText = t.descOpt1;
+      document.getElementById('desc-opt2').innerText = t.descOpt2;
+      document.getElementById('opt3-title').innerText = t.opt3Title;
+      document.getElementById('desc-opt3').innerText = t.descOpt3;
+      document.getElementById('lbl-back-btn').innerText = t.backBtn;
+      document.getElementById('answer-input').placeholder = t.placeholderAns;
+    }
+
+    function generateSingleQuestion(mode, isAdvanced = false) {
+      if (mode === 'mixed') {
+        const set1 = [10, 100, 1000];
+        const set2 = [0.1, 0.01, 0.001];
+
+        let div1, div2;
+        if (Math.random() < 0.5) {
+          div1 = set2[Math.floor(Math.random() * set2.length)];
+          div2 = set1[Math.floor(Math.random() * set1.length)];
+        } else {
+          div1 = set1[Math.floor(Math.random() * set1.length)];
+          div2 = set2[Math.floor(Math.random() * set2.length)];
+        }
+
+        let num1 = Math.floor(Math.random() * 89) + 1;
+        if (Math.random() < 0.4) {
+          num1 = parseFloat((num1 / 10).toFixed(1));
+        }
+
+        const midVal = (div1 >= 1) ? (num1 / div1) : (num1 * Math.round(1 / div1));
+        const finalVal = (div2 >= 1) ? (midVal / div2) : (midVal * Math.round(1 / div2));
+
+        const strAns = parseFloat(finalVal.toFixed(6)).toString();
+        const midStr = parseFloat(midVal.toFixed(6)).toString();
+
+        return { num1: num1, div1: div1, div2: div2, midAns: midStr, ans: strAns, modeType: 'mixed', isChain: true };
+      }
+
+      let selectedMode = mode;
+      let n1, n2;
+
+      if (selectedMode === 'div_10_100_1000') {
+        if (isAdvanced) {
+          n2 = Math.random() < 0.5 ? 100 : 1000;
+          if (n2 === 100) {
+            n1 = parseFloat((Math.random() * 8.9 + 1).toFixed(1)); 
+          } else {
+            n1 = parseFloat((Math.random() * 89 + 1).toFixed(1)); 
+          }
+        } else {
+          n2 = [10, 100, 1000][Math.floor(Math.random() * 3)];
+          n1 = Math.floor(Math.random() * 800) + 100;
+        }
+      } else {
+        if (isAdvanced) {
+          n2 = Math.random() < 0.5 ? 0.01 : 0.001;
+          n1 = parseFloat((Math.random() * 0.89 + 0.1).toFixed(2));
+        } else {
+          n2 = [0.1, 0.01, 0.001][Math.floor(Math.random() * 3)];
+          n1 = parseFloat(((Math.random() * 89) + 1).toFixed(1));
+        }
+      }
+
+      let numericAns;
+      if (n2 >= 1) {
+        numericAns = parseFloat((n1 / n2).toFixed(6));
+      } else {
+        const mult = Math.round(1 / n2);
+        numericAns = parseFloat((n1 * mult).toFixed(6));
+      }
+
+      const strAns = numericAns.toString();
+      return { num1: n1, num2: n2, ans: strAns, modeType: selectedMode, isChain: false };
+    }
+
+    function generateQuestions(mode, count = 10) {
+      const qList = [];
+      const setTracker = new Set();
+      const advCount = (count === 10) ? 4 : Math.round(count * 0.4);
+
+      while (qList.length < advCount) {
+        const q = generateSingleQuestion(mode, true);
+        const key = q.isChain ? `${q.num1}_${q.div1}_${q.div2}` : `${q.num1}_${q.num2}`;
+        if (!setTracker.has(key)) {
+          setTracker.add(key);
+          qList.push(q);
+        }
+      }
+
+      while (qList.length < count) {
+        const q = generateSingleQuestion(mode, false);
+        const key = q.isChain ? `${q.num1}_${q.div1}_${q.div2}` : `${q.num1}_${q.num2}`;
+        if (!setTracker.has(key)) {
+          setTracker.add(key);
+          qList.push(q);
+        }
+      }
+
+      return qList.sort(() => Math.random() - 0.5);
+    }
+
+    function startQuiz(mode, customCount = 10) {
+      currentMode = mode;
+      questions = generateQuestions(mode, customCount);
+      currentQIndex = 0;
+      records = [];
+      startTimeObj = new Date();
+
+      document.getElementById('page-home').classList.add('hidden');
+      document.getElementById('page-report').classList.add('hidden');
+      document.getElementById('page-quiz').classList.remove('hidden');
+      document.getElementById('lang-toggle-btn').classList.add('hidden');
+
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      wrongAttempts = 0;
+      const t = i18n[currentLang];
+      const q = questions[currentQIndex];
+
+      let modeName = t.unit1;
+      if (currentMode === 'div_decimal_power') modeName = t.unit2;
+      else if (currentMode === 'mixed') modeName = t.unit3;
+
+      document.getElementById('quiz-mode-name').innerText = modeName;
+      document.getElementById('quiz-progress-text').innerText = `${t.qProgress} ${currentQIndex + 1} / ${questions.length}`;
+
+      const eqExpr = document.getElementById('equation-expression');
+      if (q.isChain) {
+        eqExpr.innerHTML = `<span>${q.num1}</span> <span>÷</span> <span>${q.div1}</span> <span>÷</span> <span>${q.div2}</span>`;
+      } else {
+        eqExpr.innerHTML = `<span id="num1">${q.num1}</span> <span>÷</span> <span id="num2">${q.num2}</span>`;
+      }
+
+      const input = document.getElementById('answer-input');
+      input.value = '';
+      input.disabled = false;
+      
+      // 在 iPad 載入時主動獲得焦點
+      setTimeout(() => input.focus(), 100);
+
+      document.getElementById('feedback-area').classList.add('hidden');
+      document.getElementById('feedback-area').innerHTML = '';
+      
+      document.getElementById('btn-submit').classList.remove('hidden');
+      document.getElementById('btn-next').classList.add('hidden');
+      document.getElementById('btn-next').innerText = t.nextBtn;
+      document.getElementById('btn-submit').innerText = t.submitBtn;
+    }
+
+    function createDecimalMoveSVG(num1, num2, ans) {
+      const t = i18n[currentLang];
+      const isLeft = (num2 >= 1);
+      let steps = 0;
+      if (isLeft) {
+        steps = num2.toString().length - 1; 
+      } else {
+        steps = (num2.toString().split('.')[1] || '').length; 
+      }
+
+      let str1 = num1.toString();
+      if (!str1.includes('.')) str1 += '.';
+
+      let paddedStr = str1;
+      let dotIndex = paddedStr.indexOf('.');
+
+      if (isLeft) {
+        const integerDigits = dotIndex;
+        if (integerDigits < steps) {
+          const needZeros = steps - integerDigits;
+          paddedStr = '0'.repeat(needZeros) + paddedStr;
+        }
+      } else {
+        const decimalDigits = paddedStr.length - 1 - dotIndex;
+        if (decimalDigits < steps) {
+          const needZeros = steps - decimalDigits;
+          paddedStr = paddedStr + '0'.repeat(needZeros);
+        }
+      }
+
+      const moveDesc = isLeft 
+        ? t.moveLeftText.replace('{steps}', steps).replace('{num2}', num2)
+        : t.moveRightText.replace('{steps}', steps).replace('{num2}', num2);
+
+      return `
+        <div class="notebook-card">
+          <div class="notebook-title">${t.diagramTitle}</div>
+          <div style="display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;">
+            <span style="font-size: 1.2rem; font-weight: bold; color: #4a5568;">${num1} ÷ ${num2}</span>
+            <span style="font-size: 1.3rem; color: #cbd5e0;">➔</span>
+            
+            <div style="background: white; border: 1px dashed #4a90e2; padding: 8px 16px; border-radius: 8px; text-align: center;">
+              <div style="font-size: 1.5rem; font-weight: bold; font-family: 'Courier New', monospace; color: #2b5278; letter-spacing: 2px;">
+                ${paddedStr}
+              </div>
+              <div style="font-size: 0.85rem; color: #3182ce; font-weight: bold; margin-top: 4px;">
+                ${moveDesc}
+              </div>
+            </div>
+
+            <span style="font-size: 1.3rem; color: #cbd5e0;">➔</span>
+            <span style="font-size: 1.4rem; font-weight: bold; color: #38a169; background: #e6fffa; padding: 4px 10px; border-radius: 6px;">${ans}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function checkAnswer() {
+      const input = document.getElementById('answer-input');
+      const valStr = input.value.trim();
+      if (valStr === '') return;
+
+      const q = questions[currentQIndex];
+      const t = i18n[currentLang];
+      const feedback = document.getElementById('feedback-area');
+
+      if (!records[currentQIndex]) {
+        records[currentQIndex] = {
+          qIndex: currentQIndex + 1,
+          questionObj: q,
+          targetAns: q.ans,
+          userFirstWrong: null,
+          isCorrectOnFirstTry: false,
+          solved: false
+        };
+      }
+
+      const numVal = parseFloat(valStr);
+      const targetNum = parseFloat(q.ans);
+      const isNumericEqual = !isNaN(numVal) && (Math.abs(numVal - targetNum) < 0.000001);
+      const isExactMatch = (valStr === q.ans);
+
+      if (isExactMatch) {
+        if (wrongAttempts === 0) {
+          records[currentQIndex].isCorrectOnFirstTry = true;
+        }
+        records[currentQIndex].solved = true;
+
+        const randomPraise = t.praise[Math.floor(Math.random() * t.praise.length)];
+        feedback.className = "feedback-box feedback-success";
+        feedback.innerHTML = `<strong>${randomPraise}</strong>`;
+        feedback.classList.remove('hidden');
+
+        input.disabled = true;
+        document.getElementById('btn-submit').classList.add('hidden');
+        document.getElementById('btn-next').classList.remove('hidden');
+        document.getElementById('btn-next').focus();
+
+      } else {
+        wrongAttempts++;
+        if (records[currentQIndex].userFirstWrong === null) {
+          records[currentQIndex].userFirstWrong = valStr;
+        }
+
+        if (wrongAttempts < 3) {
+          const randomEnc = t.encourage[Math.floor(Math.random() * t.encourage.length)];
+          let hintText = "";
+          
+          if (q.isChain) {
+            hintText = t.hintMixed.replace('{num1}', q.num1).replace('{div1}', q.div1).replace('{div2}', q.div2);
+          } else if (q.num2 >= 1) {
+            const steps = q.num2.toString().length - 1;
+            hintText = t.hintLeft.replace('{divisor}', q.num2).replace('{steps}', steps);
+          } else {
+            const steps = (q.num2.toString().split('.')[1] || '').length;
+            const mult = Math.round(1 / q.num2);
+            hintText = t.hintRight.replace('{divisor}', q.num2).replace('{multiplier}', mult).replace('{steps}', steps);
+          }
+
+          let zeroWarnHtml = "";
+          if (isNumericEqual) {
+            zeroWarnHtml = `<div style="margin-top:6px; color:#e53e3e; font-weight:bold;">⚠️ ${t.warnZero}</div>`;
+          }
+
+          feedback.className = "feedback-box feedback-warning";
+          feedback.innerHTML = `
+            <div><strong>${randomEnc}</strong></div>
+            ${zeroWarnHtml}
+            <div style="margin-top:6px; font-size:0.95rem; color:#744210;">${hintText}</div>
+          `;
+          feedback.classList.remove('hidden');
+
+          input.value = '';
+          input.focus();
+
+        } else {
+          feedback.className = "feedback-box feedback-danger";
+          let stepHtml = "";
+          let svgDiagram = "";
+
+          if (q.isChain) {
+            stepHtml = t.stepMixed.replace(/{num1}/g, q.num1)
+                                  .replace(/{div1}/g, q.div1)
+                                  .replace(/{div2}/g, q.div2)
+                                  .replace(/{midAns}/g, q.midAns)
+                                  .replace(/{ans}/g, q.ans);
+            svgDiagram = createDecimalMoveSVG(q.num1, q.div1, q.midAns) + createDecimalMoveSVG(q.midAns, q.div2, q.ans);
+          } else if (q.num2 >= 1) {
+            const steps = q.num2.toString().length - 1;
+            stepHtml = t.stepLeft.replace(/{num2}/g, q.num2)
+                                 .replace(/{steps}/g, steps)
+                                 .replace(/{num1}/g, q.num1)
+                                 .replace(/{ans}/g, q.ans);
+            svgDiagram = createDecimalMoveSVG(q.num1, q.num2, q.ans);
+          } else {
+            const steps = (q.num2.toString().split('.')[1] || '').length;
+            const mult = Math.round(1 / q.num2);
+            stepHtml = t.stepRight.replace(/{num2}/g, q.num2)
+                                  .replace(/{mult}/g, mult)
+                                  .replace(/{steps}/g, steps)
+                                  .replace(/{num1}/g, q.num1)
+                                  .replace(/{ans}/g, q.ans);
+            svgDiagram = createDecimalMoveSVG(q.num1, q.num2, q.ans);
+          }
+
+          feedback.innerHTML = `
+            <div class="solution-steps">
+              <strong>${t.stepTitle}</strong><br>
+              ${stepHtml}
+            </div>
+            ${svgDiagram}
+          `;
+          feedback.classList.remove('hidden');
+
+          input.disabled = true;
+          document.getElementById('btn-submit').classList.add('hidden');
+          document.getElementById('btn-next').classList.remove('hidden');
+          document.getElementById('btn-next').focus();
+        }
+      }
+    }
+
+    function nextQuestion() {
+      currentQIndex++;
+      if (currentQIndex < questions.length) {
+        loadQuestion();
+      } else {
+        showReport();
+      }
+    }
+
+    function formatDate(d) {
+      const pad = (n) => n.toString().padStart(2, '0');
+      const dateStr = `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
+      const timeStr = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+      return `${dateStr} ${timeStr}`;
+    }
+
+    function formatDuration(start, end) {
+      const diffInSeconds = Math.max(0, Math.floor((end - start) / 1000));
+      const mins = Math.floor(diffInSeconds / 60);
+      const secs = diffInSeconds % 60;
+
+      if (currentLang === 'en') {
+        if (mins > 0) return `${mins} min ${secs} sec`;
+        return `${secs} sec`;
+      } else {
+        if (mins > 0) return `${mins}分鐘${String(secs).padStart(2, '0')}秒`;
+        return `${secs}秒`;
+      }
+    }
+
+    function getQuestionTitleText(q) {
+      if (q.isChain) {
+        return `${q.num1} ÷ ${q.div1} ÷ ${q.div2}`;
+      }
+      return `${q.num1} ÷ ${q.num2}`;
+    }
+
+    function showReport() {
+      const endTimeObj = new Date();
+      const t = i18n[currentLang];
+
+      document.getElementById('page-quiz').classList.add('hidden');
+      document.getElementById('page-report').classList.remove('hidden');
+
+      document.getElementById('report-main-title').innerText = t.reportTitle;
+      document.getElementById('lbl-start-time').innerText = t.startTime;
+      document.getElementById('lbl-end-time').innerText = t.endTime;
+      document.getElementById('lbl-duration').innerText = t.durationTime;
+      document.getElementById('lbl-total-correct').innerText = t.totalCorrect;
+      document.getElementById('lbl-accuracy').innerText = t.accuracy;
+      document.getElementById('lbl-mastery-title').innerText = t.masteryTitle;
+      document.getElementById('lbl-correct-title').innerText = t.correctTitle;
+      document.getElementById('lbl-wrong-title').innerText = t.wrongTitle;
+
+      document.getElementById('lbl-btn-download').innerText = t.btnDownload;
+      document.getElementById('lbl-btn-retry').innerText = t.btnRetry;
+      document.getElementById('lbl-btn-home').innerText = t.btnHome;
+
+      document.getElementById('val-start-time').innerText = formatDate(startTimeObj);
+      document.getElementById('val-end-time').innerText = formatDate(endTimeObj);
+      document.getElementById('val-duration').innerText = formatDuration(startTimeObj, endTimeObj);
+
+      let correctCount = 0;
+      records.forEach(r => {
+        if (r.isCorrectOnFirstTry) correctCount++;
+      });
+
+      const total = records.length;
+      const accuracyPct = Math.round((correctCount / total) * 100);
+
+      document.getElementById('val-correct-count').innerText = `${correctCount} / ${total}`;
+      document.getElementById('val-accuracy').innerText = `${accuracyPct}%`;
+
+      let modeName = t.unit1;
+      if (currentMode === 'div_decimal_power') modeName = t.unit2;
+      else if (currentMode === 'mixed') modeName = t.unit3;
+
+      document.getElementById('report-unit-name').innerText = `1. ${modeName}`;
+      document.getElementById('val-unit-mastery').innerText = `${correctCount} / ${total} (${accuracyPct}%)`;
+
+      const correctContainer = document.getElementById('correct-list-container');
+      correctContainer.innerHTML = '';
+      const correctItems = records.filter(r => r.isCorrectOnFirstTry);
+
+      if (correctItems.length === 0) {
+        correctContainer.innerHTML = `<div style="font-size:0.95rem; color:#718096; padding-left:5px;">${t.noCorrect}</div>`;
+      } else {
+        correctItems.forEach(item => {
+          const qText = t.questionLabel.replace('{n}', item.qIndex);
+          const qExprText = getQuestionTitleText(item.questionObj);
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'item-card-correct';
+          itemDiv.innerHTML = `
+            <div class="item-q-title">${qText} : ${qExprText}</div>
+            <div class="item-ans-text">${t.ansLabel} : ${item.targetAns}</div>
+          `;
+          correctContainer.appendChild(itemDiv);
+        });
+      }
+
+      const wrongContainer = document.getElementById('wrong-list-container');
+      wrongContainer.innerHTML = '';
+      const wrongItems = records.filter(r => !r.isCorrectOnFirstTry);
+
+      if (wrongItems.length === 0) {
+        wrongContainer.innerHTML = `<div style="font-size:0.95rem; color:#38a169; padding-left:5px;">${t.noWrong}</div>`;
+      } else {
+        wrongItems.forEach(item => {
+          const qText = t.questionLabel.replace('{n}', item.qIndex);
+          const qExprText = getQuestionTitleText(item.questionObj);
+          const userAnsDisplay = item.userFirstWrong !== null ? item.userFirstWrong : '-';
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'item-card-wrong';
+          itemDiv.innerHTML = `
+            <div class="item-q-title">${qText} : ${qExprText}</div>
+            <div class="item-ans-text">${t.yourAnsLabel} : ${userAnsDisplay} | ${t.correctAnsLabel} : ${item.targetAns}</div>
+          `;
+          wrongContainer.appendChild(itemDiv);
+        });
+      }
+    }
+
+    // 將表現分析報告卡片渲染成 PNG 圖片並自動發起下載
+    function downloadReportImage() {
+      const element = document.getElementById('report-card-to-capture');
+      if (!element) return;
+
+      html2canvas(element, {
+        scale: 2, // 提高產出圖片品質與解析度
+        backgroundColor: '#ffffff',
+        useCORS: true
+      }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `Math_Report_${new Date().toISOString().slice(0,10)}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      }).catch(err => {
+        alert("圖片下載失敗，請稍微重試：" + err);
+      });
+    }
+
+    function openModal(title, msg, cancelTxt, confirmTxt, onConfirm) {
+      document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-msg').innerText = msg;
+      document.getElementById('modal-cancel-btn').innerText = cancelTxt;
+      document.getElementById('modal-confirm-btn').innerText = confirmTxt;
+      modalActionCallback = onConfirm;
+      document.getElementById('custom-modal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('custom-modal').classList.remove('active');
+    }
+
+    function confirmModalAction() {
+      closeModal();
+      if (modalActionCallback) modalActionCallback();
+    }
+
+    function askReturnHome() {
+      const t = i18n[currentLang];
+      openModal(
+        t.modalReturnTitle,
+        t.modalReturnMsg,
+        t.modalCancel || 'Cancel',
+        t.modalStart || 'Confirm',
+        goHome
+      );
+    }
+
+    function retryPractice() {
+      startQuiz(currentMode || 'div_10_100_1000', 10);
+    }
+
+    function goHome() {
+      document.getElementById('page-quiz').classList.add('hidden');
+      document.getElementById('page-report').classList.add('hidden');
+      document.getElementById('page-home').classList.remove('hidden');
+      document.getElementById('lang-toggle-btn').classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
